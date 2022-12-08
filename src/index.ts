@@ -1,4 +1,5 @@
 import { KiviPlugin } from '@kivibot/core'
+import { ChatGPTAPI } from 'chatgpt'
 
 import type { ChatGPTConversation } from 'chatgpt'
 
@@ -19,8 +20,6 @@ plugin.onMounted(async bot => {
     plugin.throwPluginError('请先配置 sessionToken')
     return
   }
-
-  const { ChatGPTAPI } = await import('chatgpt')
 
   const api = new ChatGPTAPI(config)
 
