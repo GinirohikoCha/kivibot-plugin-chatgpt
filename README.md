@@ -20,7 +20,8 @@
 
 ```jsonc
 {
-  "sessionToken": "此处填入 token"
+  "sessionToken": "此处填入 token",
+  "cmdPrefix": "此处填入自定义指令前缀，默认 %"
 }
 ```
 

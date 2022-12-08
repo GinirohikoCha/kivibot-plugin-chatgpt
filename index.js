@@ -3,7 +3,8 @@ const { KiviPlugin } = require('@kivibot/core')
 const plugin = new KiviPlugin('ChatGPT', '1.1.0')
 
 const config = {
-  sessionToken: ''
+  sessionToken: '',
+  cmdPrefix: '%'
 }
 
 const map = new Map()
@@ -19,13 +20,13 @@ plugin.onMounted(async bot => {
   }
 
   const { ChatGPTAPI } = await import('chatgpt')
-  const api = new ChatGPTAPI(config)
+  const api = new ChatGPTAPI({ sessionToken: config.sessionToken })
   await api.ensureAuth()
 
   plugin.onMessage(async event => {
     const { raw_message } = event
 
-    if (!raw_message.startsWith('%')) return
+    if (!raw_message.startsWith(config.cmdPrefix)) return
 
     let session
 
