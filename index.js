@@ -1,28 +1,25 @@
-import { KiviPlugin } from '@kivibot/core'
-import { ChatGPTAPI } from 'chatgpt'
+const { KiviPlugin } = require('@kivibot/core')
 
-import type { ChatGPTConversation } from 'chatgpt'
-
-const plugin = new KiviPlugin('ChatGPT', '1.0.0')
+const plugin = new KiviPlugin('ChatGPT', '1.1.0')
 
 const config = {
   sessionToken: ''
 }
 
-const map: Map<number, ChatGPTConversation> = new Map()
+const map = new Map()
 
 plugin.onMounted(async bot => {
   Object.assign(config, plugin.loadConfig())
   plugin.saveConfig(config)
 
   if (!config.sessionToken) {
-    bot.sendPrivateMsg(plugin.mainAdmin, 'ChatGPT: 请先配置 sessionToken')
-    plugin.throwPluginError('请先配置 sessionToken')
+    bot.sendPrivateMsg(plugin.mainAdmin, 'ChatGPT: 请先配置 sessionToken，完成后重载插件')
+    plugin.throwPluginError('请先配置 sessionToken，完成后重载插件')
     return
   }
 
+  const { ChatGPTAPI } = await import('chatgpt')
   const api = new ChatGPTAPI(config)
-
   await api.ensureAuth()
 
   plugin.onMessage(async event => {
@@ -30,7 +27,7 @@ plugin.onMounted(async bot => {
 
     if (!raw_message.startsWith('%')) return
 
-    let session: ChatGPTConversation | undefined
+    let session
 
     if (event.message_type === 'group') {
       if (map.has(event.group_id)) {
@@ -56,10 +53,14 @@ plugin.onMounted(async bot => {
     }
 
     const msg = raw_message.replace('%', '')
-    const res = await session!.sendMessage(msg, { timeoutMs: 6 * 1000 })
 
-    event.reply(res)
+    try {
+      const res = await session.sendMessage(msg, { timeoutMs: 2 * 60 * 1000 })
+      event.reply(res, true)
+    } catch {
+      event.reply('加载超时，稍后再试试吧', true)
+    }
   })
 })
 
-export { plugin }
+module.exports = { plugin }
