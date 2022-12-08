@@ -1,6 +1,6 @@
 const { KiviPlugin } = require('@kivibot/core')
 
-const plugin = new KiviPlugin('ChatGPT', '1.1.0')
+const plugin = new KiviPlugin('ChatGPT', '1.2.1')
 
 const config = {
   sessionToken: '',
