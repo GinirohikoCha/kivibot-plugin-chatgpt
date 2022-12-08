@@ -1,7 +1,7 @@
 {
   "name": "kivibot-plugin-chatgpt",
-  "version": "1.0.0",
-  "description": "QQ 机器人框架 KiviBot 的 chatGPT 插件",
+  "version": "1.0.1",
+  "description": "QQ 机器人框架 KiviBot 的 ChatGPT 插件",
   "main": "lib/index.js",
   "repository": "KiviBotLab/kivibot-plugin-chatgpt",
   "homepage": "https://github.com/KiviBotLab/kivibot-plugin-chatgpt#readme",

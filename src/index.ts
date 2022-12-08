@@ -1,5 +1,4 @@
 import { KiviPlugin } from '@kivibot/core'
-import { ChatGPTAPI } from 'chatgpt'
 
 import type { ChatGPTConversation } from 'chatgpt'
 
@@ -21,10 +20,9 @@ plugin.onMounted(async bot => {
     return
   }
 
-  const api = new ChatGPTAPI({
-    ...config,
-    markdown: false
-  })
+  const { ChatGPTAPI } = await import('chatgpt')
+
+  const api = new ChatGPTAPI(config)
 
   await api.ensureAuth()
 
