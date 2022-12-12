@@ -1,6 +1,7 @@
 const { KiviPlugin } = require('@kivibot/core')
 
-const plugin = new KiviPlugin('ChatGPT', '1.3.0')
+const { version } = require('./package.json')
+const plugin = new KiviPlugin('ChatGPT', version)
 
 const config = {
   // sessionToken
@@ -91,10 +92,12 @@ plugin.onMounted(async bot => {
         // 如果请求失败，尝试刷新 sessionToken 后重新请求，还是刷新失败则可能 token 过期
         await api.refreshAccessToken()
       } catch {
-        event.reply(msgs.expired, true)
-
         // token 过期时，打印日志并私聊通知主管理进行更新
-        bot.pickFriend(plugin.mainAdmin).sendMsg(msgs.expired)
+        if (event.sender.user_id !== plugin.mainAdmin) {
+          bot.pickFriend(plugin.mainAdmin).sendMsg(msgs.expired)
+        }
+
+        event.reply(msgs.expired, true)
         plugin.throwPluginError(msgs.expired)
 
         return
