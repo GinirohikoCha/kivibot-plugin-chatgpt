@@ -5,7 +5,8 @@ const plugin = new KiviPlugin('ChatGPT', version)
 
 const config = {
   // sessionToken
-  sessionToken: '',
+  email: '',
+  password: '',
   // 命令前缀
   cmdPrefix: '%'
 }
@@ -25,19 +26,22 @@ plugin.onMounted(async bot => {
   Object.assign(config, plugin.loadConfig())
   plugin.saveConfig(config)
 
-  if (!config.sessionToken) {
+  if (!config.email || !config.password) {
     bot.sendPrivateMsg(plugin.mainAdmin, msgs.needConfig)
     plugin.throwPluginError(msgs.needConfig)
     return
   }
 
-  const { ChatGPTAPI } = await import('chatgpt')
+  const { ChatGPTAPI, getOpenAIAuth } = await import('chatgpt')
+
+  const openAIAuth = await getOpenAIAuth({
+    email: config.email,
+    password: config.password
+  })
 
   const api = new ChatGPTAPI({
-    markdown: true,
-    sessionToken: config.sessionToken,
-    userAgent: ChromeUA,
-    accessTokenTTL: 60 * 1000
+    ...openAIAuth,
+    markdown: true
   })
 
   try {

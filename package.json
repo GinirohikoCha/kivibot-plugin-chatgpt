@@ -21,6 +21,7 @@
     "@kivibot/core": "latest"
   },
   "dependencies": {
-    "chatgpt": "^2.0.4"
+    "chatgpt": "^2.3.0",
+    "puppeteer": "^19.4.0"
   }
 }
