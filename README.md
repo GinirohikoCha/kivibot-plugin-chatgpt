@@ -2,20 +2,24 @@
 
 ![npm (scoped)](https://img.shields.io/npm/v/kivibot-plugin-chatgpt?color=527dec&label=kivibot-plugin-chatgpt&style=flat-square)
 
-`KiviBot` 的 [ChatGPT](https://chat.openai.com) 插件。
+`KiviBot` 的 [ChatGPT](https://chat.openai.com) 插件。感谢社区的 [ChatGPT-API](https://github.com/transitive-bullshit/chatgpt-api)。
+
+**请注意！！！（2022.12.13）**
+
+[chatgpt-api](https://github.com/transitive-bullshit/chatgpt-api) 要求 `node` 版本 >= 18，且需要安装 `puppeteer` 来绕过验证 (安装比较费时)，运行要求比较严苛，且结果不容乐观，建议使用其他插件，且玩且珍惜。
 
 **特征**
 
 - 可选配置触发指令前缀，默认为 `%`
 - 默认开启上下文会话模式
 - 根据群聊、私聊进行会话隔离，互不干扰
-- 每天四点以及请求失败时，尝试自动刷新 `sessionToken`
 
 **安装**
 
 使用框架消息指令进行安装
 
 ```shell
+# 需要安装 `puppeteer` 可能耗时非常非常非常长，建议使用其他插件
 /plugin add chatgpt
 ```
 
@@ -27,25 +31,14 @@
 
 **配置**
 
-编辑 Bot 目录下的 `data/plugins/ChatGPT/config.json` 文件，配置 `sessionToken` 字段。
-
-`sessionToken` 获取方式：
-
-1. 打开 https://chat.openai.com/chat 进行登录/注册。
-2. 打开开发者工具（桌面端浏览器按 `F12` 可以打开）。
-3. 切换到 Application（应用）选项卡 > Cookie 子选项卡。
-4. 找到 `__Secure-next-auth.session-token` 的值，这个就是 `sessionToken`，双击并复制。
-
-如图所示：
-
-![dev tools](./docs/devtool.png)
-
-> derived from: [chatgpt-api](https://github.com/transitive-bullshit/chatgpt-api#session-tokens)
+编辑 Bot 目录下的 `data/plugins/ChatGPT/config.json` 文件，配置 [OpenAI](https://openai.com/) 账号密码。
 
 ```jsonc
 {
-  // 此处填入 sessionToken
-  "sessionToken": "",
+  // cOpenAI 邮箱账号
+  "email": "",
+  // cOpenAI 账号密码
+  "password": "",
   // 此处填入自定义指令前缀，默认 %
   "cmdPrefix": "%"
 }

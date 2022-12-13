@@ -4,23 +4,21 @@ const { version } = require('./package.json')
 const plugin = new KiviPlugin('ChatGPT', version)
 
 const config = {
-  // sessionToken
+  // OpenAI 邮箱账号
   email: '',
+  // OpenAI 账号密码
   password: '',
-  // 命令前缀
+  // 触发命令前缀
   cmdPrefix: '%'
 }
 
 const map = new Map()
 
 const msgs = {
-  needConfig: `ChatGPT: 第一次使用请先在 Bot 目录下的 data/plugin/${plugin.name}/config.json 中配置 sessionToken，抓取方式参考：https://github.com/KiviBotLab/kivibot-plugin-chatgpt，完成后重载插件`,
-  expired: 'ChatGPT: sessionToken 可能已失效，请重新抓取并配置后重载插件',
+  needConfig: `ChatGPT: 第一次使用请先在 Bot 目录下的 data/plugin/${plugin.name}/config.json 中配置 OpenAI 账号密码，OpenAI 官网：https://openai.com/`,
+  error: 'ChatGPT: 验证失败，可能是 OpenAI 账号密码错误',
   timeout: 'ChatGPT: 加载超时，请稍后再试试吧'
 }
-
-const ChromeUA =
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36'
 
 plugin.onMounted(async bot => {
   Object.assign(config, plugin.loadConfig())
@@ -44,14 +42,8 @@ plugin.onMounted(async bot => {
     markdown: true
   })
 
-  try {
-    // 确保 token 有效
-    await api.ensureAuth()
-  } catch {
-    plugin.throwPluginError(msgs.expired)
-    await bot.pickFriend(plugin.mainAdmin).sendMsg(msgs.expired)
-    return
-  }
+  // 确保 token 有效
+  await api.ensureAuth()
 
   plugin.onMessage(async event => {
     const { raw_message } = event
@@ -77,7 +69,7 @@ plugin.onMounted(async bot => {
         session = api.getConversation()
         map.set(event.discuss_id, session)
       }
-    } else {
+    } else if (event.message_type === 'private') {
       if (map.has(event.sender.user_id)) {
         session = map.get(event.sender.user_id)
       } else {
@@ -98,11 +90,11 @@ plugin.onMounted(async bot => {
       } catch {
         // token 过期时，打印日志并私聊通知主管理进行更新
         if (event.sender.user_id !== plugin.mainAdmin) {
-          bot.pickFriend(plugin.mainAdmin).sendMsg(msgs.expired)
+          bot.pickFriend(plugin.mainAdmin).sendMsg(msgs.error)
         }
 
-        event.reply(msgs.expired, true)
-        plugin.throwPluginError(msgs.expired)
+        event.reply(msgs.error, true)
+        plugin.throwPluginError(msgs.error)
 
         return
       }
@@ -115,21 +107,6 @@ plugin.onMounted(async bot => {
         plugin.throwPluginError(e)
         event.reply(msgs.timeout, true)
       }
-    }
-  })
-
-  /**
-   * 凌晨四点刷新一次 sessionToken
-   * @from https://github.com/easydu2002/chat_gpt_oicq/blob/dev/src/main.ts#L23-L28
-   */
-  const refreshTask = plugin.cron('0 0 4 * * *', async bot => {
-    try {
-      await api.refreshAccessToken()
-    } catch {
-      await bot.pickFriend(plugin.mainAdmin).sendMsg(msgs.expired)
-      plugin.throwPluginError(msgs.expired)
-
-      refreshTask.stop()
     }
   })
 })
