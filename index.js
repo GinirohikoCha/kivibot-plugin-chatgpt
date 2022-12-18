@@ -24,16 +24,7 @@ const msgs = {
 plugin.onMounted(async bot => {
   plugin.saveConfig(Object.assign(config, plugin.loadConfig()))
 
-  if (!config.apiKey) {
-    bot.sendPrivateMsg(plugin.mainAdmin, msgs.needConfig)
-    plugin.throwPluginError(msgs.needConfig)
-    return
-  }
-
-  const configuration = new Configuration({ apiKey: config.apiKey })
-  const openai = new OpenAIApi(configuration)
-
-  plugin.onAdminCmd('/chatgpt', (e, params, options) => {
+  plugin.onAdminCmd('/chatgpt', (e, params) => {
     const [cmd, value] = params
 
     if (cmd === 'setkey' && value) {
@@ -61,6 +52,14 @@ plugin.onMounted(async bot => {
 
     return e.reply(cmds.join('\n'), true)
   })
+
+  if (!config.apiKey) {
+    bot.sendPrivateMsg(plugin.mainAdmin, msgs.needConfig)
+    return plugin.log(msgs.needConfig)
+  }
+
+  const configuration = new Configuration({ apiKey: config.apiKey })
+  const openai = new OpenAIApi(configuration)
 
   plugin.onMessage(async event => {
     const { message, raw_message } = event

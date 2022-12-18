@@ -1,6 +1,6 @@
 {
   "name": "kivibot-plugin-chatgpt",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "QQ 机器人框架 KiviBot 的 OpenAI / ChatGPT 插件",
   "main": "index.js",
   "repository": "KiviBotLab/kivibot-plugin-chatgpt",
