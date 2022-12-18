@@ -1,5 +1,7 @@
 node_modules
 
+/.idea
 /data
 
 pnpm-lock.yaml
+yarn.lock
