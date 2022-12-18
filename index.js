@@ -39,22 +39,25 @@ plugin.onMounted(async bot => {
   plugin.onMessage(async event => {
     const { raw_message } = event
 
-    if (!raw_message.startsWith(config.cmdPrefix)) {
+    if (!raw_message.startsWith(config.cmdPrefix) && !event.atme) {
       return
     }
 
+    // 强制刷新session
     if (raw_message === '%换一个话题') {
       switch (event.message_type) {
         case 'private':
           map.delete(event.sender.user_id)
-          return
+          break
         case 'group':
           map.delete(event.group_id)
-          return
+          break
         case 'discuss':
           map.delete(event.discuss_id)
-          return
+          break
       }
+      await event.reply('话题已更新', false)
+      return
     }
 
     try {
@@ -72,8 +75,15 @@ plugin.onMounted(async bot => {
           break
       }
 
+      let rawMessage
+      // cmdPrefix 优化
+      rawMessage = raw_message.startsWith('%') ? raw_message.substring(1, raw_message.length) : raw_message
+      // @ 优化
+      rawMessage = event.atme ? rawMessage.replace('@' + plugin.bot.nickname + ' ', '') : rawMessage
+
+      // 生成请求字段 含上下文
       const requestMsg = (session.context ? session.context + '\n' : '') +
-          'Human:' + raw_message.replace(config.cmdPrefix, '') + '\nAI:'
+          'Human:' + rawMessage + '\nAI:'
 
       const response = await openai.createCompletion({
         model: "text-davinci-003",
@@ -81,6 +91,8 @@ plugin.onMounted(async bot => {
         temperature: 0.5,
         max_tokens: 2048,
       });
+
+      console.debug(response)
 
       // TODO 访问失败处理
       const responseMsg = response.data.choices[0].text.replace('\n', '')
