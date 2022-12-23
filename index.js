@@ -142,10 +142,10 @@ function getSession(event) {
   if (session) {
     const tenMinutesMs = 1000 * 60 * 10
     const isTimeout = now - session.time >= tenMinutesMs
-    const isTextTooLong = session.context.length >= 10000
+    const isTextTooLong = session.context.length >= 600
 
     if (isTimeout || isTextTooLong) {
-      // 超过十分钟没有回复，或者聊天记录大于 1w 字，清空会话记录
+      // 超过十分钟没有回复，或者聊天记录大于 600 字，清空会话记录
       session.context = ''
     } else {
       // 没超过十分钟，刷新当前会话时间
