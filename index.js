@@ -54,7 +54,7 @@ plugin.onMounted(async bot => {
       config.enableGroup = value === 'on'
       plugin.saveConfig(config)
 
-      return e.reply(`已${config.enableGroup ? '开启' : '关闭'} at 触发`, true)
+      return e.reply(`已${config.enableGroup ? '开启' : '关闭'}群聊功能`, true)
     }
 
     if (cmd === 'prefix' && value) {
